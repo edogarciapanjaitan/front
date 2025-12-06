@@ -3,7 +3,8 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getToken } from "@/utils/auth";
+import { useRouter } from "next/navigation";
+import { getToken, isAuthenticated, isUser } from "@/utils/auth";
 import EVENTS from "../detail/page";
 
 interface BackendEvent {
@@ -19,10 +20,18 @@ interface BackendEvent {
 
 export default function EventDetailPage() {
     const { id } = useParams();
+    const router = useRouter();
     const [event, setEvent] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isStaticEvent, setIsStaticEvent] = useState(false);
+    const [authenticated, setAuthenticated] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        setAuthenticated(isAuthenticated());
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -161,13 +170,25 @@ export default function EventDetailPage() {
             </div>
 
             <div>
-                {/* Buy Ticket Button */}
-                <Link
-                    href={`/checkout/${event.id}`}
-                    className="mt-6 inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition"
-                >
-                    Buy Ticket
-                </Link>
+                {/* Buy Ticket Button - Hanya muncul jika user sudah login */}
+                {authenticated ? (
+                    <Link
+                        href={`/checkout/${event.id}`}
+                        className="mt-6 inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition"
+                    >
+                        Buy Ticket
+                    </Link>
+                ) : (
+                    <button
+                        onClick={() => {
+                            alert("Anda harus login terlebih dahulu untuk membeli tiket!");
+                            router.push("/login");
+                        }}
+                        className="mt-6 inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition cursor-pointer"
+                    >
+                        Buy Ticket
+                    </button>
+                )}
 
                 {/* Back Button */}
                 <Link

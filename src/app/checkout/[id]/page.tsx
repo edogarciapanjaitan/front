@@ -1,13 +1,46 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import EVENTS from "@/app/events/detail/page";
 import Link from "next/link";
+import { isAuthenticated } from "@/utils/auth";
 // event list (harus sama seperti di landing page)
 
 export default function CheckoutPage() {
   const { id } = useParams(); // ambil ID dari URL
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const event = EVENTS.find((e) => e.id === id);
+
+  useEffect(() => {
+    setMounted(true);
+    const auth = isAuthenticated();
+    
+    setAuthenticated(auth);
+
+    // Cek apakah user sudah login
+    if (!auth) {
+      // Redirect ke login jika belum login
+      alert("Anda harus login terlebih dahulu untuk membeli tiket!");
+      router.push("/login");
+      return;
+    }
+  }, [router]);
+
+  if (!mounted) {
+    return (
+      <div className="pt-24 min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return null; // Akan redirect ke login
+  }
 
   if (!event) return <p>Event tidak ditemukan.</p>;
 
