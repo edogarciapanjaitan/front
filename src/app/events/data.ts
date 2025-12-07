@@ -1,5 +1,3 @@
-import React from "react";
-
 export type EventItem = {
   id: string;
   title: string;
@@ -11,7 +9,7 @@ export type EventItem = {
   price: number;
 };
 
-  const EVENTS: EventItem[] = [
+export const EVENTS: EventItem[] = [
   {
     id: "e1",
     title: "Tech Conference 2025",
@@ -74,5 +72,3 @@ export type EventItem = {
   },
 ];
 
-
-  export default EVENTS;

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { getToken } from "@/utils/auth";
-import EVENTS from "./detail/page";
+import { EVENTS } from "./data";
 import React from "react";
 
 // Type untuk event statis

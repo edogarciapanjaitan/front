@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import EVENTS from "@/app/events/detail/page";
+import { EVENTS } from "@/app/events/data";
 import Link from "next/link";
 import { isAuthenticated } from "@/utils/auth";
 // event list (harus sama seperti di landing page)

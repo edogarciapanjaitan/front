@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getToken, isAuthenticated, isUser } from "@/utils/auth";
-import EVENTS from "../detail/page";
+import { EVENTS } from "../data";
 
 interface BackendEvent {
     id: number;
