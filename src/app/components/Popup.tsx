@@ -1,14 +1,18 @@
+"use client";
+
 import React from "react";
+
+interface PopupProps {
+    message: string;
+    type?: "success" | "error";
+    onClose: () => void;
+}
 
 export default function Popup({
     message,
     type = "success",
     onClose
-}: {
-    message: string;
-    type?: "success" | "error";
-    onClose: () => void;
-}) {
+}: PopupProps) {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
             <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm text-center animate-[fadeIn_.3s_ease]">
@@ -32,3 +36,4 @@ export default function Popup({
         </div>
     );
 }
+
