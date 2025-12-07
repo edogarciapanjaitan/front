@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { getToken } from "@/utils/auth";
 import EVENTS from "./detail/page";
+import React from "react";
 
 // Type untuk event statis
 type StaticEventItem = {
