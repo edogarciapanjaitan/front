@@ -10,14 +10,14 @@ export default function Footer() {
         <footer className="bg-gray-900 text-white mt-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {/* Brand Section */}
+                    {/* Brand  */}
                     <div className="col-span-1 lg:col-span-2">
                         <h2 className="text-2xl font-bold mb-4 text-red-500">Pro Event</h2>
                         <p className="text-gray-400 mb-4 max-w-md">
                             Platform terpercaya untuk menemukan dan mengelola event terbaik. 
                             Jelajahi berbagai acara menarik dan ciptakan kenangan tak terlupakan.
                         </p>
-                        {/* Social Media Links */}
+                        {/* Sosmed */}
                         <div className="flex gap-4 mt-6">
                             <a
                                 href="https://facebook.com"

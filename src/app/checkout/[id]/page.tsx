@@ -21,7 +21,7 @@ export default function CheckoutPage() {
     
     setAuthenticated(auth);
 
-    // Cek apakah user sudah login
+    
     if (!auth) {
       // Redirect ke login jika belum login
       alert("Anda harus login terlebih dahulu untuk membeli tiket!");

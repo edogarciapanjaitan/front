@@ -26,7 +26,7 @@ export default function AccountCreationPage() {
     e.preventDefault();
     setError("");
 
-    // Simple validation
+    //  validation
     if (form.password !== form.confirmPassword) {
       setError("Password dan konfirmasi password tidak cocok.");
       return;
@@ -81,7 +81,7 @@ export default function AccountCreationPage() {
             />
           </div>
 
-          {/* Phone */}
+          {/* Tlp */}
           <div>
             <label className="block text-sm font-medium text-slate-700">
               Phone Number
