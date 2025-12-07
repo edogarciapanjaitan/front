@@ -54,7 +54,7 @@ export default function AboutPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Hero Section */}
+            
             <div className="relative w-full h-[60vh] pt-20 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-800"></div>
                 <div className="absolute inset-0 bg-black/20"></div>
@@ -114,7 +114,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Stats Section */}
+            
             <section className="py-16 px-4 bg-slate-50">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">
@@ -139,7 +139,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Values Section */}
+            {/* Values */}
             <section className="py-16 px-4 bg-white">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">

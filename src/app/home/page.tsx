@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX, useState, useEffect } from "react";
+import React, { JSX, useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { isAuthenticated, isAdmin, isUser, getRole, getToken } from "@/utils/auth";
@@ -26,6 +26,7 @@ export type BackendEventItem = {
     location: string;
     description: string;
     slug: string;
+    category?: string; // Optional karena mungkin backend tidak selalu mengirim category
 };
 
 // Event statis yang selalu ditampilkan untuk semua (guest, user, admin)
@@ -155,14 +156,14 @@ export default function LandingPage(): JSX.Element {
         backendId?: number;
     };
 
-    const allEvents: CombinedEvent[] = [
+    const allEvents: CombinedEvent[] = useMemo(() => [
         ...STATIC_EVENTS.map(e => ({
             id: e.id,
             title: e.title,
             date: e.date,
             image: e.image,
             category: e.category,
-            location: e.location,
+            location: e.location.trim(),
             description: e.description,
             price: e.price,
             isStatic: true
@@ -172,22 +173,33 @@ export default function LandingPage(): JSX.Element {
             title: e.title,
             date: e.date,
             image: e.cover_img || "",
-            category: "",
-            location: e.location,
+            category: (e.category || "").trim(), // Gunakan category dari backend jika ada
+            location: (e.location || "").trim(), // Pastikan location juga ada dan trim whitespace
             description: e.description,
             price: 0,
             isStatic: false,
             backendId: e.id
         }))
-    ];
+    ], [backendEvents]);
 
-    const categories = Array.from(new Set(allEvents.map((e) => e.category).filter(Boolean)));
-    const locations = Array.from(new Set(allEvents.map((e) => e.location)));
+    const categories = useMemo(() => 
+        Array.from(new Set(allEvents.map((e) => e.category).filter(Boolean))).sort(),
+        [allEvents]
+    );
+    
+    const locations = useMemo(() => 
+        Array.from(new Set(allEvents.map((e) => e.location).filter(Boolean))).sort(),
+        [allEvents]
+    );
 
     const filteredEvents = allEvents.filter((e) => {
         const matchesSearch = e.title.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = category === "" || e.category === category;
-        const matchesLocation = location === "" || e.location === location;
+        // Filter category: jika category filter kosong, tampilkan semua. Jika tidak, hanya tampilkan yang category-nya match
+        const matchesCategory = category === "" || (e.category && e.category.trim() === category.trim());
+        // Filter location: jika location filter kosong, tampilkan semua. Jika tidak, match exact (case insensitive)
+        const eventLocation = (e.location || "").trim().toLowerCase();
+        const filterLocation = location.trim().toLowerCase();
+        const matchesLocation = location === "" || (eventLocation && eventLocation === filterLocation);
         return matchesSearch && matchesCategory && matchesLocation;
     });
     if (!mounted) {

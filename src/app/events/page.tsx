@@ -1,10 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { getToken } from "@/utils/auth";
+import EVENTS from "./detail/page";
 
-interface Event {
+// Type untuk event statis
+type StaticEventItem = {
+    id: string;
+    title: string;
+    date: string;
+    image: string;
+    category: string;
+    location: string;
+    description: string;
+    price: number;
+};
+
+// Type untuk event dari backend
+interface BackendEvent {
     id: number;
     title: string;
     slug: string;
@@ -13,12 +27,26 @@ interface Event {
     cover_img: string;
     date: string;
     createdAt: string;
+    category?: string;
 }
 
+// Type untuk combined event
+type CombinedEvent = {
+    id: string;
+    title: string;
+    date: string;
+    image: string;
+    category: string;
+    location: string;
+    description: string;
+    price: number;
+    isStatic: boolean;
+    backendId?: number;
+};
+
 export default function EventsPage() {
-    const [events, setEvents] = useState<Event[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [backendEvents, setBackendEvents] = useState<BackendEvent[]>([]);
+    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
 
     useEffect(() => {
@@ -30,64 +58,59 @@ export default function EventsPage() {
             setLoading(true);
             const token = getToken();
 
-            if (!token) {
-                setError("Silakan login terlebih dahulu untuk melihat events");
-                setLoading(false);
-                return;
+            // Fetch events dari backend jika user sudah login (optional)
+            if (token) {
+                const res = await fetch("http://localhost:8000/api/event", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    setBackendEvents(result.data || []);
+                }
             }
-
-            const res = await fetch("http://localhost:8000/api/event", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-            });
-
-            if (!res.ok) {
-                throw new Error("Gagal mengambil data events");
-            }
-
-            const result = await res.json();
-            setEvents(result.data || []);
-            setError(null);
         } catch (err: any) {
             console.error("Error fetching events:", err);
-            setError(err.message || "Terjadi kesalahan saat mengambil data events");
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredEvents = events.filter((event) =>
+    // Gabungkan event statis dengan event dari backend
+    const allEvents: CombinedEvent[] = useMemo(() => [
+        ...EVENTS.map(e => ({
+            id: e.id,
+            title: e.title,
+            date: e.date,
+            image: e.image,
+            category: e.category,
+            location: e.location.trim(),
+            description: e.description,
+            price: e.price,
+            isStatic: true
+        })),
+        ...backendEvents.map(e => ({
+            id: `backend-${e.id}`,
+            title: e.title,
+            date: e.date,
+            image: e.cover_img || "",
+            category: (e.category || "").trim(),
+            location: (e.location || "").trim(),
+            description: e.description,
+            price: 0,
+            isStatic: false,
+            backendId: e.id
+        }))
+    ], [backendEvents]);
+
+    const filteredEvents = allEvents.filter((event) =>
         event.title.toLowerCase().includes(search.toLowerCase())
     );
 
-    if (loading) {
-        return (
-            <div className="pt-24 min-h-screen flex items-center justify-center">
-                <p className="text-xl">Loading events...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="pt-24 min-h-screen flex items-center justify-center px-4">
-                <div className="text-center">
-                    <p className="text-red-600 text-xl mb-4">{error}</p>
-                    {error.includes("login") && (
-                        <Link
-                            href="/login"
-                            className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                        >
-                            Login
-                        </Link>
-                    )}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="pt-24 min-h-screen bg-gray-50 p-6">
@@ -121,14 +144,14 @@ export default function EventsPage() {
                         {filteredEvents.map((event) => (
                             <Link
                                 key={event.id}
-                                href={`/events/${event.id}`}
+                                href={event.isStatic ? `/events/${event.id}` : `/events/${event.backendId || event.id}`}
                                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden cursor-pointer"
                             >
                                 {/* Event Image */}
                                 <div className="w-full h-48 overflow-hidden">
-                                    {event.cover_img ? (
+                                    {event.image ? (
                                         <img
-                                            src={event.cover_img}
+                                            src={event.image}
                                             alt={event.title}
                                             className="w-full h-full object-cover"
                                         />
@@ -148,15 +171,26 @@ export default function EventsPage() {
                                         📍 {event.location}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-2">
-                                        📅 {new Date(event.date).toLocaleDateString("id-ID", {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric"
-                                        })}
+                                        📅 {event.isStatic 
+                                            ? event.date 
+                                            : new Date(event.date).toLocaleDateString("id-ID", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric"
+                                            })
+                                        }
                                     </p>
+                                    {event.category && (
+                                        <p className="text-xs text-blue-600 mb-2">#{event.category}</p>
+                                    )}
                                     <p className="text-gray-700 text-sm line-clamp-2 mt-2">
                                         {event.description}
                                     </p>
+                                    {event.price > 0 && (
+                                        <p className="text-sm font-semibold text-green-600 mt-2">
+                                            Rp {event.price.toLocaleString("id-ID")}
+                                        </p>
+                                    )}
                                 </div>
                             </Link>
                         ))}

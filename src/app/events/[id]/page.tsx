@@ -64,6 +64,8 @@ export default function EventDetailPage() {
             setLoading(true);
             const token = getToken();
 
+            // Fetch event detail - tidak memerlukan login
+            // Token hanya digunakan jika ada (optional, untuk user yang sudah login)
             const res = await fetch(`http://localhost:8000/api/event/${eventId}`, {
                 method: "GET",
                 headers: {

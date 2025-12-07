@@ -43,13 +43,13 @@ const Navbar = () => {
                     Pro Event
                 </a>
 
-                {/* Desktop Menu */}
+                
                 <ul className="hidden md:flex items-center gap-6">
                     <li><a href="/home" className="hover:text-gray-600 transition">Home</a></li>
                     <li><a href="/events" className="hover:text-gray-600 transition">Events</a></li>
-                    <li><a href="/abut" className="hover:text-gray-600 transition">About</a></li>
+                    <li><a href="/about" className="hover:text-gray-600 transition">About</a></li>
                     
-                    {/* Conditional Menu berdasarkan role */}
+                    {/* role */}
                     {authenticated ? (
                         <>
                             {admin && (
@@ -74,7 +74,7 @@ const Navbar = () => {
                     )}
                 </ul>
 
-                {/* Mobile Menu Button */}
+                {/* Menu Button */}
                 <button 
                     onClick={() => setIsOpen(!isOpen)} 
                     className="md:hidden p-2 rounded-md hover:bg-gray-200 focus:outline-none transition"
@@ -94,7 +94,7 @@ const Navbar = () => {
                         <li><a href="/events" onClick={handleLinkClick} className="block px-4 py-2 hover:bg-gray-100 rounded transition">Events</a></li>
                         <li><a href="/abut" onClick={handleLinkClick} className="block px-4 py-2 hover:bg-gray-100 rounded transition">About</a></li>
                         
-                        {/* Conditional Menu berdasarkan role */}
+                        {/* Menu berdasarkan role */}
                         {authenticated ? (
                             <>
                                 {admin && (
